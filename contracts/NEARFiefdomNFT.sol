@@ -15,7 +15,7 @@ contract NEARFiefdomNFT is ERC721Pausable, Ownable {
      *  _mintPrice  The cost to mint a transaction.
      *  _maxMint    The maximum number of NFTs that can be minted.
      */
-    constructor(uint _mintPrice, uint16 _maxMint) ERC721("Near Fiefdom NFT", "NFIEF") {
+    constructor(uint _mintPrice, uint16 _maxMint) ERC721("Near Fiefdom NFT", "NFIEF-TIL") {
         mintPrice = _mintPrice;
         maxMint = _maxMint;
     }
@@ -28,12 +28,5 @@ contract NEARFiefdomNFT is ERC721Pausable, Ownable {
         require(balanceOf(msg.sender) <= 0, "NEARFiefdomNFT: user cannot mint the same NFT.");
         _safeMint(msg.sender, uint256(currentId));
         currentId++;
-    }
-
-    /**
-     *  Returns the type of resource that a tile NFT produces.
-     */
-    function resourceType(uint tokenId) external pure returns(NEARFiefdomLib.Resources) {
-        return NEARFiefdomLib.Resources.Lumber;
     }
 }
