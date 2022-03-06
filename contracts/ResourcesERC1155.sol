@@ -12,9 +12,9 @@ contract ResourcesERC1155 is ERC1155PresetMinterPauser {
         uint256[] memory preliminaryRssIds;
         uint256[] memory preliminaryRss;
 
-        for(uint i = 0; i < 4; i++) {
+        for(uint i = 0; i < 5; i++) {
             preliminaryRssIds[i] = i;
-            preliminaryRss[i] = 500000;
+            preliminaryRss[i] = 500000 * 1 ether;
         }
 
         _mintBatch(

@@ -11,9 +11,22 @@ library NEARFiefdomLib {
         Brick,
         Iron,
         Coal,
-        Oil,
+        OliveOil,
         Pearl,
         Glass
+    }
+
+    enum BuildingTypes {
+        Empty,
+        Lumbermill,
+        Quarry,
+        Brickyard,
+        IronMine,
+        CoalMine,
+        OliveOilGrove,
+        PearlDivers,
+        GlassArtisans,
+        Housing
     }
 
     struct Building {
@@ -24,7 +37,9 @@ library NEARFiefdomLib {
 
     struct Tile {
         uint16 buildingMax;
-        bytes30 data;
+        uint8 resourceType;
+        bytes29 data;
+        uint lastClaim;
         Building[] buildings;
     }
 
