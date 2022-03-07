@@ -18,6 +18,7 @@ library NEARFiefdomLib {
 
     enum BuildingTypes {
         Empty,
+        Housing,
         Lumbermill,
         Quarry,
         Brickyard,
@@ -25,12 +26,33 @@ library NEARFiefdomLib {
         CoalMine,
         OliveOilGrove,
         PearlDivers,
-        GlassArtisans,
-        Housing
+        GlassArtisans
+    }
+
+    function resourceArrToInt(Resources[] memory rss) public pure returns(uint[] memory arr) {
+        for(uint i = 0; i < rss.length; i++) {
+            arr[i] = uint256(uint8(rss[i]));
+        }
+    }
+
+    function buildingArrToInt(BuildingTypes[] memory bT) public pure returns(uint[] memory arr) {
+        for(uint i = 0; i < bT.length; i++) {
+            arr[i] = uint256(uint8(bT[i]));
+        }
+    }
+
+    function buildingToResource(BuildingTypes buildingType) external pure returns(Resources) {
+        require(buildingType <= BuildingTypes.GlassArtisans, "NEARFiefdomLib: must be a resource generator.");
+        require(buildingType != BuildingTypes.Empty, "NEARFiefdomLib: must not be an empty buildingId.");
+        return Resources(uint8(buildingType) - 1);
+    }
+
+    function resourceToBuilding(Resources resource) external pure returns(BuildingTypes) {
+        return BuildingTypes(uint8(resource) + 1);
     }
 
     struct Building {
-        uint16 buildingId;
+        uint16 buildingType;
         uint24 buildingLevel;
         bytes27 data;
     }
