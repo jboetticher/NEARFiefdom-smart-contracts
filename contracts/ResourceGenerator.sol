@@ -1,18 +1,26 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ResourcesERC1155.sol";
 import "./NEARFiefdomLib.sol";
+import "./NEARFiefdomNFT.sol";
 
 // This should be upgradable
-contract ResourceGenerator {
-    IERC721 tiles;
+contract ResourceGenerator is Ownable {
+    NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
     mapping(uint256 => NEARFiefdomLib.Tile) public tileData;
+    mapping(NEARFiefdomLib.Resources => ResourceToPrice) public mintData;
+
+    struct ResourceToPrice {
+        uint16 tileMax;
+        uint16 tilesMinted;
+        uint224 tilePrice;
+    }
 
     // Need to turn this into the init function instead of having a constructor
-    constructor(IERC721 _tiles, ResourcesERC1155 _resourceTokens) {
+    constructor(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens) {
         tiles = _tiles;
         resourceTokens = _resourceTokens;
     }
@@ -35,10 +43,44 @@ contract ResourceGenerator {
         _;
     }
 
-    function initializeTile(uint256 tileId) external tileOwnerOnly(tileId) {
-        // Add in details to the tile or some shit
+    /**
+     *  Converts uint16 to resource enum.
+     */
+    function u2Rss(uint16 resourceType)
+        internal
+        pure
+        returns (NEARFiefdomLib.Resources)
+    {
+        return NEARFiefdomLib.Resources(resourceType);
     }
 
+    // mint a tile
+    function mintTile(uint16 resourceType) public payable returns (bool) {
+        require(
+            mintData[u2Rss(resourceType)].tileMax != 0 &&
+                mintData[u2Rss(resourceType)].tilePrice != 0,
+            "ResourceGenerator: resource must be initialized."
+        );
+        require(
+            msg.value >= mintData[u2Rss(resourceType)].tilePrice,
+            "ResourceGenerator: value sent must be equal to or greater than the price."
+        );
+        require(
+            mintData[u2Rss(resourceType)].tilesMinted + 1 <
+                mintData[u2Rss(resourceType)].tileMax,
+            "ResourceGenerator: must be under mint max."
+        );
+
+        uint newId = tiles.userMintToken(msg.sender);
+        NEARFiefdomLib.Tile storage t = tileData[newId];
+        t.buildingMax = 6;
+        t.resourceType = uint8(resourceType);
+        t.lastClaim = block.timestamp;
+
+        return true;
+    }
+
+    
     // Upgrade building (external)
     function upgradeBuilding(
         uint256 tileId,
@@ -69,9 +111,8 @@ contract ResourceGenerator {
             "ResourceGenerator: buildingType cannot be the empty type."
         );
         require(
-            NEARFiefdomLib.Resources(tile.resourceType) ==
-                NEARFiefdomLib.Resources.Gold ||
-                NEARFiefdomLib.Resources(tile.resourceType) ==
+            u2Rss(tile.resourceType) == NEARFiefdomLib.Resources.Gold ||
+                u2Rss(tile.resourceType) ==
                 NEARFiefdomLib.buildingToResource(
                     NEARFiefdomLib.BuildingTypes(buildingId)
                 ),
@@ -86,7 +127,11 @@ contract ResourceGenerator {
             NEARFiefdomLib.Resources[] memory rss,
             uint256[] memory cost
         ) = upgradeBuildingCost(tile.buildings[buildingId]);
-        resourceTokens.burnBatch(to, NEARFiefdomLib.resourceArrToInt(rss), cost);
+        resourceTokens.burnBatch(
+            to,
+            NEARFiefdomLib.resourceArrToInt(rss),
+            cost
+        );
 
         // get the upgrade
         tileData[tileId].buildings[buildingId].buildingLevel += 1;

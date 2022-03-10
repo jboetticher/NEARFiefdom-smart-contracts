@@ -7,26 +7,52 @@ import "./NEARFiefdomLib.sol";
 
 contract NEARFiefdomNFT is ERC721Pausable, Ownable {
 
-    uint mintPrice;
-    uint16 maxMint;
-    uint16 currentId;
+    address minter;
+    uint32 maxMint;
+    uint32 currentId;
 
     /**
      *  _mintPrice  The cost to mint a transaction.
      *  _maxMint    The maximum number of NFTs that can be minted.
      */
-    constructor(uint _mintPrice, uint16 _maxMint) ERC721("Near Fiefdom NFT", "NFIEF-TIL") {
-        mintPrice = _mintPrice;
+    constructor(uint32 _maxMint) ERC721("Near Fiefdom NFT", "NFIEF-TIL") {
         maxMint = _maxMint;
     }
 
+
+
     /**
-     *  Allows a user to mint a token for a specific fee.
+     *  Allows the minter to mint a token for a specific fee.
      */
-    function userMintToken() external payable {
-        require(msg.value >= mintPrice, "NEARFiefdomNFT: must send enough currency to mint.");
-        require(balanceOf(msg.sender) <= 0, "NEARFiefdomNFT: user cannot mint the same NFT.");
-        _safeMint(msg.sender, uint256(currentId));
+    function userMintToken(address to) external whenNotPaused returns(uint256) {
+        require(msg.sender == minter, "NEARFiefdomNFT: only minter can mint tokens.");
+        _safeMint(to, uint256(currentId));
         currentId++;
+        return currentId;
+    }
+
+
+
+    // Owner-only Methods
+    
+    /**
+     *  Sets the contract that can mint NFTs.
+     */
+    function setMinter(address _minter) external onlyOwner {
+        minter = _minter;
+    }
+
+    /**
+     *  Allows the owner to pause the contract.
+     */
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /**
+     *  Allows the owner to unpause the contract.
+     */
+    function unpause() external onlyOwner {
+        _unpause();
     }
 }
