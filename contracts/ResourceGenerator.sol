@@ -13,6 +13,9 @@ contract ResourceGenerator is Ownable {
     mapping(uint256 => NEARFiefdomLib.Tile) public tileData;
     mapping(NEARFiefdomLib.Resources => ResourceToPrice) public mintData;
 
+    event BuildingUpgraded(uint indexed tileId, address indexed owner, uint16 buildingId, uint16 buildType, uint24 buildingLevel);
+    event RewardsClaimed(uint indexed tileId, address indexed owner);
+
     struct ResourceToPrice {
         uint16 tileMax;
         uint16 tilesMinted;
@@ -44,7 +47,7 @@ contract ResourceGenerator is Ownable {
     }
 
     /**
-     *  Converts uint16 to resource enum.
+     *  Helper function that converts uint16 to resource enum.
      */
     function u2Rss(uint16 resourceType)
         internal
@@ -54,12 +57,41 @@ contract ResourceGenerator is Ownable {
         return NEARFiefdomLib.Resources(resourceType);
     }
 
-    // mint a tile
+    /**
+     *  Helper function that converts a daily rate to a per second rate.
+     */
+    function dailyRateToSeconds(uint256 dailyRate)
+        internal
+        pure
+        returns (uint256)
+    {
+        return dailyRate /= 86400;
+    }
+
+    /**
+     *  Helper function that returns true if a building type has been initialized.
+     */
+    function isActivatedBuilding(uint256 buildingType)
+        internal
+        pure
+        returns (bool)
+    {
+        return
+            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Lumbermill) ||
+            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Quarry) ||
+            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Brickyard) ||
+            buildingType == uint256(NEARFiefdomLib.BuildingTypes.IronMine) ||
+            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Housing);
+    }
+
+    /**
+     *  Allows a user to mint a tile of a particular resource type.
+     */
     function mintTile(uint16 resourceType) public payable returns (bool) {
         require(
             mintData[u2Rss(resourceType)].tileMax != 0 &&
                 mintData[u2Rss(resourceType)].tilePrice != 0,
-            "ResourceGenerator: resource must be initialized."
+            "ResourceGenerator: resource's mint data must be initialized."
         );
         require(
             msg.value >= mintData[u2Rss(resourceType)].tilePrice,
@@ -71,7 +103,7 @@ contract ResourceGenerator is Ownable {
             "ResourceGenerator: must be under mint max."
         );
 
-        uint newId = tiles.userMintToken(msg.sender);
+        uint256 newId = tiles.userMintToken(msg.sender);
         NEARFiefdomLib.Tile storage t = tileData[newId];
         t.buildingMax = 6;
         t.resourceType = uint8(resourceType);
@@ -80,8 +112,9 @@ contract ResourceGenerator is Ownable {
         return true;
     }
 
-    
-    // Upgrade building (external)
+    /**
+     *  Allows a user to upgrade a building if they own the tile the building is on.
+     */
     function upgradeBuilding(
         uint256 tileId,
         uint16 buildingId,
@@ -90,12 +123,14 @@ contract ResourceGenerator is Ownable {
         _upgradeBuilding(tileId, buildingId, buildingType, msg.sender);
     }
 
-    // Upgrade building (internal)
+    /**
+     *  Upgrades a building.
+     */
     function _upgradeBuilding(
         uint256 tileId,
         uint16 buildingId,
         uint16 buildingType,
-        address to
+        address from
     ) internal {
         NEARFiefdomLib.Tile memory tile = tileData[tileId];
 
@@ -120,7 +155,7 @@ contract ResourceGenerator is Ownable {
         );
 
         // claim resources
-        _claimTileRewards(tileId, to);
+        _claimTileRewards(tileId, from);
 
         // pay the price
         (
@@ -128,16 +163,21 @@ contract ResourceGenerator is Ownable {
             uint256[] memory cost
         ) = upgradeBuildingCost(tile.buildings[buildingId]);
         resourceTokens.burnBatch(
-            to,
+            from,
             NEARFiefdomLib.resourceArrToInt(rss),
             cost
         );
 
         // get the upgrade
-        tileData[tileId].buildings[buildingId].buildingLevel += 1;
+        NEARFiefdomLib.Building storage b = tileData[tileId].buildings[buildingId];
+        b.buildingLevel += 1;
+
+        emit BuildingUpgraded(tileId, from, buildingId, b.buildingType, b.buildingLevel);
     }
 
-    // Upgrade building cost
+    /**
+     *  Returns the price to upgrade a building.
+     */
     function upgradeBuildingCost(NEARFiefdomLib.Building memory building)
         public
         pure
@@ -172,21 +212,9 @@ contract ResourceGenerator is Ownable {
         }
     }
 
-    // If the building is activated
-    function isActivatedBuilding(uint256 buildingType)
-        internal
-        pure
-        returns (bool)
-    {
-        return
-            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Lumbermill) ||
-            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Quarry) ||
-            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Brickyard) ||
-            buildingType == uint256(NEARFiefdomLib.BuildingTypes.IronMine) ||
-            buildingType == uint256(NEARFiefdomLib.BuildingTypes.Housing);
-    }
-
-    // Claim rewards of a tile (external)
+    /**
+     *  Allows a user to claim the rewards from a tile.
+     */
     function claimTileRewards(uint256 tileId) external tileOwnerOnly(tileId) {
         bool success = _claimTileRewards(tileId, msg.sender);
         require(
@@ -195,7 +223,9 @@ contract ResourceGenerator is Ownable {
         );
     }
 
-    // Claim rewards of a tile
+    /**
+     *  Claims the rewards from a tile.
+     */
     function _claimTileRewards(uint256 tileId, address to)
         internal
         returns (bool success)
@@ -216,18 +246,13 @@ contract ResourceGenerator is Ownable {
         for (uint256 i = 0; i < rewards.length; i++) {
             if (rewards[i] > 0) resourceTokens.mint(to, i, rewards[i], "");
         }
+
+        emit RewardsClaimed(tileId, to);
     }
 
-    // Turns a daily rate into a per second rate
-    function dailyRateToSeconds(uint256 dailyRate)
-        internal
-        pure
-        returns (uint256)
-    {
-        return dailyRate /= 86400;
-    }
-
-    // Current tile rewards
+    /**
+     *  Returns the tile rewards that can be claimed by a certain tile.
+     */
     function currentTileRewards(uint256 tileId)
         public
         view
@@ -269,5 +294,26 @@ contract ResourceGenerator is Ownable {
                 }
             }
         }
+    }
+
+    /**
+     *  Allows the owner to withdraw the mint fees earned.
+     */
+    function withdraw() external onlyOwner {
+        (bool success, ) = owner().call{value: address(this).balance}("");
+        require(success, "Transfer failed.");
+    }
+
+    /**
+     *  Allows the owner to change the mint data.
+     */
+    function setMintData(
+        uint16 resourceType,
+        uint16 tileMax,
+        uint224 tilePrice
+    ) external onlyOwner {
+        ResourceToPrice storage rp = mintData[u2Rss(resourceType)];
+        rp.tileMax = tileMax;
+        rp.tilePrice = tilePrice;
     }
 }
