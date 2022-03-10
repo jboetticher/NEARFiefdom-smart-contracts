@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ResourcesERC1155.sol";
 import "./NEARFiefdomNFT.sol";
 
-// This should be upgradable
+// TODO: @dogpool This should be upgradable. Turn constructor into intialization function
 contract ResourceGenerator is Ownable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
@@ -199,11 +199,17 @@ contract ResourceGenerator is Ownable {
             "ResourceGenerator: must be under mint max."
         );
 
+        // Mints tile
         uint256 newId = tiles.userMintToken(msg.sender);
         Tile storage t = tileData[newId];
         t.buildingMax = 6;
         t.resourceType = uint8(resourceType);
         t.lastClaim = block.timestamp;
+
+        // Gives the user preliminary resources
+        resourceTokens.mint(msg.sender, 0, 100 ether, "");
+        resourceTokens.mint(msg.sender, 1, 750 ether, "");
+        resourceTokens.mint(msg.sender, 2, 750 ether, "");
 
         return true;
     }
@@ -215,7 +221,7 @@ contract ResourceGenerator is Ownable {
         uint256 tileId,
         uint16 buildingId,
         uint16 buildingType
-    ) external tileOwnerOnly(tileId) {
+    ) external tileIsInitialized(tileId) tileOwnerOnly(tileId) {
         _upgradeBuilding(tileId, buildingId, buildingType, msg.sender);
     }
 
@@ -310,7 +316,11 @@ contract ResourceGenerator is Ownable {
     /**
      *  Allows a user to claim the rewards from a tile.
      */
-    function claimTileRewards(uint256 tileId) external tileOwnerOnly(tileId) {
+    function claimTileRewards(uint256 tileId)
+        external
+        tileIsInitialized(tileId)
+        tileOwnerOnly(tileId)
+    {
         bool success = _claimTileRewards(tileId, msg.sender);
         require(
             success,

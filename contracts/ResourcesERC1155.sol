@@ -29,4 +29,14 @@ contract ResourcesERC1155 is ERC1155PresetMinterPauser {
         require(hasRole(METADATA_ROLE, _msgSender()), "ResourcesERC1155: must have metadata role to pause");
         setURI(newuri);
     }
+
+    function grantMintRole(address to) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "ResourcesERC1155: only admin can grant a mint role.");
+        _setupRole(MINTER_ROLE, to);
+    }
+
+    function revokeMintRole(address to) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "ResourcesERC1155: only admin can revoke a mint role.");
+        _revokeRole(MINTER_ROLE, to);
+    }
 }
