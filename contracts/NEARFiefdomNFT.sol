@@ -8,16 +8,13 @@ import "./NEARFiefdomLib.sol";
 contract NEARFiefdomNFT is ERC721Pausable, Ownable {
 
     address minter;
-    uint32 maxMint;
     uint32 currentId;
 
     /**
      *  _mintPrice  The cost to mint a transaction.
      *  _maxMint    The maximum number of NFTs that can be minted.
      */
-    constructor(uint32 _maxMint) ERC721("Near Fiefdom NFT", "NFIEF-TIL") {
-        maxMint = _maxMint;
-    }
+    constructor() ERC721("Near Fiefdom NFT", "NFIEF-TIL") {}
 
 
 
