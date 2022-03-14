@@ -3,30 +3,19 @@ require('@openzeppelin/hardhat-upgrades');
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
-require("./tasks/account");
-require("./tasks/transfer");
-require("./tasks/totalSupply");
-require("./tasks/balanceOf");
-require("./tasks/approve");
-require("./tasks/transferFrom");
-// To export your private key from Metamask, open Metamask and
-// go to Account Details > Export Private Key
-// Be aware of NEVER putting real Ether into testing accounts
-//instructrions: Add your Aurora Private key (from MetaMask) to .env file and then run yarn :
-//echo "AURORA_PRIVATE_KEY=YOUR_AURORA_PRIVATE_KEY_HERE" >> .env
-//yarn install 
-require('dotenv').config();
 
-const AURORA_PRIVATE_KEY = process.env.AURORA_PRIVATE_KEY;
-const GANACHE_PRIVATE_KEY = process.env.GANACHE_PRIVATE_KEY;
+let keys = require("./keys.json");
+
+const AURORA_PRIVATE_KEY = keys.AURORA_PRIVATE_KEY;
+const GANACHE_PRIVATE_KEY = keys.GANACHE_PRIVATE_KEY;
 
 module.exports = {
-  solidity: "0.8.0",
+  solidity: "0.8.11",
   networks: {
     ganache: {
       url: "http://localhost:7545",
       accounts: [`0x${GANACHE_PRIVATE_KEY}`],
-      chainId: 5777,
+      chainId: 1337,
       gasPrice: 50000000000
     },
     testnet_aurora: {

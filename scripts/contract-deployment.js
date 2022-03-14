@@ -27,7 +27,7 @@ async function main() {
   const WrappedResourceERC20 = await ethers.getContractFactory("WrappedResourceERC20");
   let wrapped = [["Gold", 0], ["Wood", 0], ["Stone", 0], ["Brick", 0], ["Iron", 0]];
   for(let i = 0; i < 5; i++) {
-    wrapped[i][1] = await WrappedResourceERC20.deploy();
+    wrapped[i][1] = await WrappedResourceERC20.deploy(rss.address, i, "NFIEF-W" + i, "Wrapped NEAR Fiefdom " + wrapped[i][0]);
     console.log("Wrapped " + wrapped[i][0] + " deployed at " + wrapped[i][1].address);
   }
 
@@ -46,6 +46,7 @@ async function main() {
   let rssgenaddr = await rssgen.address;
   await nft.setMinter(rssgenaddr);
   await rss.grantMintRole(rssgenaddr);
+  console.log("ResourceGenerator granted roles.");
 
 
   // 6. Manually add pools to AuroraSwap

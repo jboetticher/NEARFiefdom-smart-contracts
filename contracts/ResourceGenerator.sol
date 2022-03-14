@@ -1,13 +1,11 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.1;
 
-import "@openzeppelin/contracts-upgradeable";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./ResourcesERC1155.sol";
 import "./NEARFiefdomNFT.sol";
 
-contract ResourceGenerator is Ownable, Initializable {
+contract ResourceGenerator is OwnableUpgradeable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
     mapping(uint256 => Tile) public tileData;
@@ -69,6 +67,7 @@ contract ResourceGenerator is Ownable, Initializable {
 
     // Need to turn this into the init function instead of having a constructor
     function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens) public initializer {
+        __Ownable_init_unchained();
         tiles = _tiles;
         resourceTokens = _resourceTokens;
     }

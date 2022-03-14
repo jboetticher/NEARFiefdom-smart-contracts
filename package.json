@@ -4,7 +4,7 @@
   "description": "Smart contracts for the decentralized city builder game NEAR Fiefdom, built for Aurora.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy-ganache": "npx hardhat run --network ganache scripts/contract-deployment.js"
   },
   "repository": {
     "type": "git",
