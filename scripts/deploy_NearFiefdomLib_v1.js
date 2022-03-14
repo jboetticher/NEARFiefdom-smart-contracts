@@ -33,12 +33,13 @@ async function main() {
 
 
 
-  // TODO @dogpool
   // 4. Deploy and initialize upgradable contract ResourceGenerator.
   const ResourceGenerator = await ethers.getContractFactory("ResourceGenerator");
-  // TODO: @dogpool check if [42] is the right value. I don't know what that means.
-  const rssgen = await upgrades.deployProxy(ResourceGenerator, [42]); 
-
+  const rssgen = await upgrades.deployProxy(ResourceGenerator, [nft.address, rss.address]
+  //  {deployer, initializer: 'initialize'}
+  ); 
+  await rssgen.deployed();
+  console.log("ResourceGenerator deployed to:", rssgen.address);
 
 
   // 5. Give the ResourceGenerator mint powers for resources & tiles.
@@ -56,4 +57,11 @@ async function main() {
   // Gold <-> NEAR?
 }
 
-main();
+// We recommend this pattern to be able to use async/await everywhere
+// and properly handle errors.
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

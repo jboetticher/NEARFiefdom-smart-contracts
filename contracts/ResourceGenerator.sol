@@ -1,12 +1,13 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts-upgradeable";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./ResourcesERC1155.sol";
 import "./NEARFiefdomNFT.sol";
 
-// TODO: @dogpool This should be upgradable. Turn constructor into intialization function
-contract ResourceGenerator is Ownable {
+contract ResourceGenerator is Ownable, Initializable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
     mapping(uint256 => Tile) public tileData;
@@ -67,7 +68,7 @@ contract ResourceGenerator is Ownable {
     }
 
     // Need to turn this into the init function instead of having a constructor
-    constructor(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens) {
+    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens) public initializer {
         tiles = _tiles;
         resourceTokens = _resourceTokens;
     }
