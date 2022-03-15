@@ -35,10 +35,8 @@ module.exports = {
       url: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
       accounts: [`0x${AURORA_PRIVATE_KEY}`],
       chainId: 3,
-      gas: 5500000,
-      gasPrice: 20000000000,
       confirmations: 2,
-      timeoutBlocks: 200
+      timeout: 120000
     },
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
