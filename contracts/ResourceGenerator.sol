@@ -205,6 +205,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         t.buildingMax = 6;
         t.resourceType = uint8(resourceType);
         t.lastClaim = block.timestamp;
+        mintData[u2Rss(resourceType)].tilesMinted += 1;
 
         // Gives the user preliminary resources
         resourceTokens.mint(msg.sender, 0, 100 ether, "");

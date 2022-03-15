@@ -1,18 +1,6 @@
 const { ethers, upgrades } = require("hardhat");
 
 async function main() {
-  /* Awesome, we can use the same thing on the ResourceGenerator
-
-  // Deploying
-  const NearFiefdomLib = await ethers.getContractFactory("NearFiefdomLib");
-  const instance = await upgrades.deployProxy(NearFiefdomLib, [42]);
-  await instance.deployed();
-
-  // Upgrading
-  const NearFiefdomLib_v2 = await ethers.getContractFactory("NearFiefdomLib_v2");
-  const upgraded = await upgrades.upgradeProxy(instance.address, NearFiefdomLib_v2);
-  */
-
   // 1. Deploy NEARFiefdomNFT
   const NearFiefdomNFT = await ethers.getContractFactory("NEARFiefdomNFT");
   const nft = await NearFiefdomNFT.deploy();
@@ -25,7 +13,7 @@ async function main() {
 
   // 3. Fuck I guess we have to deploy the wrapped
   const WrappedResourceERC20 = await ethers.getContractFactory("WrappedResourceERC20");
-  let wrapped = [["Gold", 0], ["Wood", 0], ["Stone", 0], ["Brick", 0], ["Iron", 0]];
+  let wrapped = [["Gold", 0], ["Lumber", 0], ["Stone", 0], ["Brick", 0], ["Iron", 0]];
   for(let i = 0; i < 5; i++) {
     wrapped[i][1] = await WrappedResourceERC20.deploy(rss.address, i, "NFIEF-W" + i, "Wrapped NEAR Fiefdom " + wrapped[i][0]);
     console.log("Wrapped " + wrapped[i][0] + " deployed at " + wrapped[i][1].address);
@@ -35,10 +23,8 @@ async function main() {
 
   // 4. Deploy and initialize upgradable contract ResourceGenerator.
   const ResourceGenerator = await ethers.getContractFactory("ResourceGenerator");
-  const rssgen = await upgrades.deployProxy(ResourceGenerator, [nft.address, rss.address]
-  //  {deployer, initializer: 'initialize'}
-  ); 
-  await rssgen.deployed();
+  console.log("Beginning ResourceGenerator deployment: " + nft.address + ", " + rss.address);
+  const rssgen = await upgrades.deployProxy(ResourceGenerator, [nft.address, rss.address]);
   console.log("ResourceGenerator deployed to:", rssgen.address);
 
 
@@ -48,8 +34,17 @@ async function main() {
   await rss.grantMintRole(rssgenaddr);
   console.log("ResourceGenerator granted roles.");
 
+  // 6. Initialize the mint data for each of the resources in the ResourceGenerator.
+  await rssgen.setMintData(1, 40, "100000000000000000");
+  console.log("ResourceGenerator mint data set for Lumber.");
+  await rssgen.setMintData(2, 40, "100000000000000000");
+  console.log("ResourceGenerator mint data set for Stone.");
+  await rssgen.setMintData(3, 30, "150000000000000000");
+  console.log("ResourceGenerator mint data set for Brick.");
+  await rssgen.setMintData(4, 20, "200000000000000000");
+  console.log("ResourceGenerator mint data set for Iron.");
 
-  // 6. Manually add pools to AuroraSwap
+  // 7. Manually add pools to AuroraSwap
   // https://swap.auroraswap.net/#/swap
   // Gold <-> Wood
   // Gold <-> Stone

@@ -8,6 +8,7 @@ let keys = require("./keys.json");
 
 const AURORA_PRIVATE_KEY = keys.AURORA_PRIVATE_KEY;
 const GANACHE_PRIVATE_KEY = keys.GANACHE_PRIVATE_KEY;
+const INFURA_API_KEY = keys.INFURA_API_KEY;
 
 module.exports = {
   solidity: "0.8.11",
@@ -31,12 +32,18 @@ module.exports = {
       gasPrice: 120 * 1000000000
     },
     ropsten: {
-      url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
       accounts: [`0x${AURORA_PRIVATE_KEY}`],
       chainId: 3,
-      live: true,
-      gasPrice: 50000000000,
-      gasMultiplier: 2,
+      gas: 5500000,
+      gasPrice: 20000000000,
+      confirmations: 2,
+      timeoutBlocks: 200
+    },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
+      accounts: [`0x${AURORA_PRIVATE_KEY}`],
+      chainId: 4,
     },
   }
 };
