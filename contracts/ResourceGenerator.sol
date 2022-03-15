@@ -183,7 +183,7 @@ contract ResourceGenerator is OwnableUpgradeable {
     /**
      *  Allows a user to mint a tile of a particular resource type.
      */
-    function mintTile(uint16 resourceType) public payable returns (bool) {
+    function mintTile(uint16 resourceType) public payable returns (uint) {
         require(
             mintData[u2Rss(resourceType)].tileMax != 0 &&
                 mintData[u2Rss(resourceType)].tilePrice != 0,
@@ -201,10 +201,9 @@ contract ResourceGenerator is OwnableUpgradeable {
 
         // Mints tile
         uint256 newId = tiles.userMintToken(msg.sender);
-        Tile storage t = tileData[newId];
-        t.buildingMax = 6;
-        t.resourceType = uint8(resourceType);
-        t.lastClaim = block.timestamp;
+        tileData[newId].buildingMax = 6;
+        tileData[newId].resourceType = uint8(resourceType);
+        tileData[newId].lastClaim = block.timestamp;
         mintData[u2Rss(resourceType)].tilesMinted += 1;
 
         // Gives the user preliminary resources
@@ -212,7 +211,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         resourceTokens.mint(msg.sender, 1, 750 ether, "");
         resourceTokens.mint(msg.sender, 2, 750 ether, "");
 
-        return true;
+        return newId;
     }
 
     /**

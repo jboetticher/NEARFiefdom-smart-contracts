@@ -24,7 +24,7 @@ contract NEARFiefdomNFT is ERC721Pausable, Ownable {
         require(msg.sender == minter, "NEARFiefdomNFT: only minter can mint tokens.");
         _safeMint(to, uint256(currentId));
         currentId++;
-        return currentId;
+        return currentId - 1;
     }
 
 

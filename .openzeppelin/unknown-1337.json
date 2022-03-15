@@ -39,6 +39,11 @@
       "address": "0x0Bb1b2ae2D2e4632d4AABb08bE837f405D5f6715",
       "txHash": "0x6e65e96f3ed810c57fedb2ebfedbdc7e974ef80c77ec10eac273f9b617b46154",
       "kind": "transparent"
+    },
+    {
+      "address": "0x01E7d54adE8CE6097a50511460bB3CC28db5E507",
+      "txHash": "0xde6802e5aa8407d95544ff955d161ebc385004378f0e471c48a7f494ae908b98",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -146,6 +151,209 @@
             "label": "contract NEARFiefdomNFT"
           },
           "t_contract(ResourcesERC1155)6282": {
+            "label": "contract ResourcesERC1155"
+          },
+          "t_enum(Resources)5185": {
+            "label": "enum ResourceGenerator.Resources",
+            "members": [
+              "Gold",
+              "Lumber",
+              "Stone",
+              "Brick",
+              "Iron",
+              "Coal",
+              "OliveOil",
+              "Pearl",
+              "Glass"
+            ]
+          },
+          "t_mapping(t_enum(Resources)5185,t_struct(ResourceToPrice)5155_storage)": {
+            "label": "mapping(enum ResourceGenerator.Resources => struct ResourceGenerator.ResourceToPrice)"
+          },
+          "t_mapping(t_uint256,t_struct(Tile)5175_storage)": {
+            "label": "mapping(uint256 => struct ResourceGenerator.Tile)"
+          },
+          "t_struct(Building)5162_storage": {
+            "label": "struct ResourceGenerator.Building",
+            "members": [
+              {
+                "label": "buildingType",
+                "type": "t_uint16"
+              },
+              {
+                "label": "buildingLevel",
+                "type": "t_uint24"
+              },
+              {
+                "label": "data",
+                "type": "t_bytes27"
+              }
+            ]
+          },
+          "t_struct(ResourceToPrice)5155_storage": {
+            "label": "struct ResourceGenerator.ResourceToPrice",
+            "members": [
+              {
+                "label": "tileMax",
+                "type": "t_uint16"
+              },
+              {
+                "label": "tilesMinted",
+                "type": "t_uint16"
+              },
+              {
+                "label": "tilePrice",
+                "type": "t_uint224"
+              }
+            ]
+          },
+          "t_struct(Tile)5175_storage": {
+            "label": "struct ResourceGenerator.Tile",
+            "members": [
+              {
+                "label": "buildingMax",
+                "type": "t_uint16"
+              },
+              {
+                "label": "resourceType",
+                "type": "t_uint8"
+              },
+              {
+                "label": "data",
+                "type": "t_bytes29"
+              },
+              {
+                "label": "lastClaim",
+                "type": "t_uint256"
+              },
+              {
+                "label": "buildings",
+                "type": "t_array(t_struct(Building)5162_storage)dyn_storage"
+              }
+            ]
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint224": {
+            "label": "uint224"
+          },
+          "t_uint24": {
+            "label": "uint24"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_uint8": {
+            "label": "uint8"
+          }
+        }
+      }
+    },
+    "8515e72fd3cafc4521ec9e59bb0451a5392ebf4cac0621417e330f5429679828": {
+      "address": "0x2bE3eC9C35dE523FaC8B262aCbc8325EBc45d58e",
+      "txHash": "0x9ea2c794bd778f73e558f6209f208c4b2d58e9268043ea410cf04654fadd03bd",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "tiles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_contract(NEARFiefdomNFT)5106",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:9"
+          },
+          {
+            "label": "resourceTokens",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_contract(ResourcesERC1155)6287",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:10"
+          },
+          {
+            "label": "tileData",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_struct(Tile)5175_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:11"
+          },
+          {
+            "label": "mintData",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_enum(Resources)5185,t_struct(ResourceToPrice)5155_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:12"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_struct(Building)5162_storage)dyn_storage": {
+            "label": "struct ResourceGenerator.Building[]"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_bytes27": {
+            "label": "bytes27"
+          },
+          "t_bytes29": {
+            "label": "bytes29"
+          },
+          "t_contract(NEARFiefdomNFT)5106": {
+            "label": "contract NEARFiefdomNFT"
+          },
+          "t_contract(ResourcesERC1155)6287": {
             "label": "contract ResourcesERC1155"
           },
           "t_enum(Resources)5185": {
