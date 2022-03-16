@@ -253,9 +253,7 @@ contract ResourceGenerator is OwnableUpgradeable {
             "ResourceGenerator: buildingType cannot be the empty type."
         );
         require(
-            u2Rss(tile.resourceType) == Resources.Gold ||
-                u2Rss(tile.resourceType) ==
-                buildingToResource(BuildingTypes(buildingType)),
+            u2Rss(tile.resourceType) <= Resources.Iron,
             "ResourceGenerator: must be a valid building."
         );
 
