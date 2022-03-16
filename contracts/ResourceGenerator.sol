@@ -4,11 +4,13 @@ pragma solidity ^0.8.1;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./ResourcesERC1155.sol";
 import "./NEARFiefdomNFT.sol";
+import "hardhat/console.sol";
 
 contract ResourceGenerator is OwnableUpgradeable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
     mapping(uint256 => Tile) public tileData;
+    mapping(uint256 => Building[10]) public buildingData;
     mapping(Resources => ResourceToPrice) public mintData;
 
     event BuildingUpgraded(
@@ -37,14 +39,13 @@ contract ResourceGenerator is OwnableUpgradeable {
         uint8 resourceType;
         bytes29 data;
         uint256 lastClaim;
-        Building[] buildings;
     }
 
     enum Resources {
         Gold,
         Lumber,
+        Food,
         Stone,
-        Brick,
         Iron,
         Coal,
         OliveOil,
@@ -56,8 +57,8 @@ contract ResourceGenerator is OwnableUpgradeable {
         Empty,
         Housing,
         Lumbermill,
+        Farm,
         Quarry,
-        Brickyard,
         IronMine,
         CoalMine,
         OliveOilGrove,
@@ -66,7 +67,10 @@ contract ResourceGenerator is OwnableUpgradeable {
     }
 
     // Need to turn this into the init function instead of having a constructor
-    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens) public initializer {
+    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens)
+        public
+        initializer
+    {
         __Ownable_init_unchained();
         tiles = _tiles;
         resourceTokens = _resourceTokens;
@@ -118,8 +122,8 @@ contract ResourceGenerator is OwnableUpgradeable {
     {
         return
             buildingType == uint256(BuildingTypes.Lumbermill) ||
+            buildingType == uint256(BuildingTypes.Farm) ||
             buildingType == uint256(BuildingTypes.Quarry) ||
-            buildingType == uint256(BuildingTypes.Brickyard) ||
             buildingType == uint256(BuildingTypes.IronMine) ||
             buildingType == uint256(BuildingTypes.Housing);
     }
@@ -183,7 +187,7 @@ contract ResourceGenerator is OwnableUpgradeable {
     /**
      *  Allows a user to mint a tile of a particular resource type.
      */
-    function mintTile(uint16 resourceType) public payable returns (uint) {
+    function mintTile(uint16 resourceType) public payable returns (uint256) {
         require(
             mintData[u2Rss(resourceType)].tileMax != 0 &&
                 mintData[u2Rss(resourceType)].tilePrice != 0,
@@ -235,6 +239,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         address from
     ) internal {
         Tile memory tile = tileData[tileId];
+        Building[10] memory buildings = buildingData[tileId];
 
         // require building max
         require(
@@ -250,22 +255,43 @@ contract ResourceGenerator is OwnableUpgradeable {
         require(
             u2Rss(tile.resourceType) == Resources.Gold ||
                 u2Rss(tile.resourceType) ==
-                buildingToResource(BuildingTypes(buildingId)),
+                buildingToResource(BuildingTypes(buildingType)),
             "ResourceGenerator: must be a valid building."
         );
 
+        // get the price
+        if (buildingData[tileId][buildingId].buildingType == 0) {
+            Building[10] storage s_buildings = buildingData[tileId];
+            s_buildings[buildingId].buildingType = uint16(buildingType);
+            buildings = s_buildings;
+        }
+        (Resources[] memory rss, uint256[] memory cost) = upgradeBuildingCost(
+            buildings[buildingId]
+        );
+
+        console.log("Got upgrade building cost.");
+
+        // burn tokens
+        for (uint256 i = 0; i < 5; i++) {
+            if (cost[i] > 0) {
+                resourceTokens.burn(from, uint256(rss[i]), cost[i]);
+            }
+        }
+        console.log("Tokens burned");
+
         // claim resources
         _claimTileRewards(tileId, from);
-
-        // pay the price
-        (Resources[] memory rss, uint256[] memory cost) = upgradeBuildingCost(
-            tile.buildings[buildingId]
-        );
-        resourceTokens.burnBatch(from, resourceArrToInt(rss), cost);
+        console.log("Tile rewards claimed");
 
         // get the upgrade
-        Building storage b = tileData[tileId].buildings[buildingId];
+        Building storage b = buildingData[tileId][buildingId];
         b.buildingLevel += 1;
+        console.log(
+            "Building level of tile %s at id %s is %s",
+            tileId,
+            buildingId,
+            b.buildingLevel
+        );
 
         emit BuildingUpgraded(
             tileId,
@@ -288,11 +314,9 @@ contract ResourceGenerator is OwnableUpgradeable {
             building.buildingType > 0,
             "ResourceGenerator: buildingType must not be 0."
         );
-        /*
-        require(
-            isActivatedBuilding(building.buildingType),
-            "ResourceGenerator: building must have been activated."
-        );*/
+
+        rss = new Resources[](5);
+        cost = new uint256[](5);
 
         uint256 nextlevel = building.buildingLevel + 1;
 
@@ -300,11 +324,11 @@ contract ResourceGenerator is OwnableUpgradeable {
         cost[0] = nextlevel * 50 ether;
         rss[1] = Resources.Lumber;
         cost[1] = nextlevel * 500 ether;
-        rss[2] = Resources.Stone;
+        rss[2] = Resources.Food;
         cost[2] = nextlevel * 500 ether;
 
         if (building.buildingLevel >= 10) {
-            rss[3] = Resources.Brick;
+            rss[3] = Resources.Stone;
             cost[3] = nextlevel * 750 ether;
         }
         if (building.buildingLevel >= 50) {
@@ -322,10 +346,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         tileOwnerOnly(tileId)
     {
         bool success = _claimTileRewards(tileId, msg.sender);
-        require(
-            success,
-            "ResourceGenerator: wait at least a minute before attempting to claim again."
-        );
+        require(success, "ResourceGenerator: claiming failed.");
     }
 
     /**
@@ -335,17 +356,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         internal
         returns (bool success)
     {
-        uint256[] memory rewards = currentTileRewards(tileId);
-
-        // "ResourceGenerator: wait at least a minute before attempting to claim again."
-        if (rewards.length < 2) {
-            return false;
-        }
-        /*
-        require(
-            rewards.length > 1,
-            "ResourceGenerator: wait at least a minute before attempting to claim again."
-        );*/
+        uint256[5] memory rewards = currentTileRewards(tileId);
 
         // Mint for every positive value
         for (uint256 i = 0; i < rewards.length; i++) {
@@ -353,6 +364,7 @@ contract ResourceGenerator is OwnableUpgradeable {
         }
 
         emit RewardsClaimed(tileId, to);
+        return true;
     }
 
     /**
@@ -362,9 +374,11 @@ contract ResourceGenerator is OwnableUpgradeable {
         public
         view
         tileIsInitialized(tileId)
-        returns (uint256[] memory rewards)
+        returns (uint256[5] memory)
     {
         Tile memory tile = tileData[tileId];
+        Building[10] memory buildings = buildingData[tileId];
+        uint256[5] memory rewards;
 
         if (tileData[tileId].lastClaim <= block.timestamp + 60) {
             rewards[0] = 0;
@@ -379,9 +393,9 @@ contract ResourceGenerator is OwnableUpgradeable {
             }
 
             // Calculate & put the data in there
-            for (i = 0; i < tile.buildings.length; i++) {
+            for (i = 0; i < tile.buildingMax; i++) {
                 BuildingTypes buildingId = BuildingTypes(
-                    tile.buildings[i].buildingType
+                    buildings[i].buildingType
                 );
                 if (buildingId == BuildingTypes.Empty) continue;
                 Resources rss = buildingToResource(buildingId);
@@ -389,16 +403,18 @@ contract ResourceGenerator is OwnableUpgradeable {
                 if (rss == Resources.Gold) {
                     rewards[uint16(rss)] +=
                         lastTileClaim *
-                        tile.buildings[i].buildingLevel *
+                        buildings[i].buildingLevel *
                         dailyRateToSeconds(10 ether); // Gold generation multiplier
                 } else {
                     rewards[uint16(rss)] +=
                         lastTileClaim *
-                        tile.buildings[i].buildingLevel *
+                        buildings[i].buildingLevel *
                         dailyRateToSeconds(25 ether); // Resource generation multiplier
                 }
             }
         }
+
+        return rewards;
     }
 
     /**
