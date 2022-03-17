@@ -9,9 +9,11 @@ import "hardhat/console.sol";
 contract ResourceGenerator is OwnableUpgradeable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
+    uint public mintPrice;
+    uint128 public maxMint;
+    uint128 public tilesMinted;
     mapping(uint256 => Tile) public tileData;
     mapping(uint256 => Building[10]) public buildingData;
-    mapping(Resources => ResourceToPrice) public mintData;
 
     event BuildingUpgraded(
         uint256 indexed tileId,
@@ -22,12 +24,6 @@ contract ResourceGenerator is OwnableUpgradeable {
     );
     event RewardsClaimed(uint256 indexed tileId, address indexed owner);
 
-    struct ResourceToPrice {
-        uint16 tileMax;
-        uint16 tilesMinted;
-        uint224 tilePrice;
-    }
-
     struct Building {
         uint16 buildingType;
         uint24 buildingLevel;
@@ -36,8 +32,8 @@ contract ResourceGenerator is OwnableUpgradeable {
 
     struct Tile {
         uint16 buildingMax;
-        uint8 resourceType;
-        bytes29 data;
+        //uint8 resourceType;
+        bytes30 data;
         uint256 lastClaim;
     }
 
@@ -67,13 +63,15 @@ contract ResourceGenerator is OwnableUpgradeable {
     }
 
     // Need to turn this into the init function instead of having a constructor
-    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens)
+    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens, uint _mintPrice, uint128 _maxMint)
         public
         initializer
     {
         __Ownable_init_unchained();
         tiles = _tiles;
         resourceTokens = _resourceTokens;
+        mintPrice = _mintPrice;
+        maxMint = _maxMint;
     }
 
     modifier tileOwnerOnly(uint256 tileId) {
@@ -87,7 +85,7 @@ contract ResourceGenerator is OwnableUpgradeable {
     modifier tileIsInitialized(uint256 tileId) {
         require(
             tileData[tileId].buildingMax != 0 &&
-                tileData[tileId].resourceType != 0 &&
+                //tileData[tileId].resourceType != 0 &&
                 tileData[tileId].lastClaim != 0,
             "ResourceGenerator: tile is not initialized."
         );
@@ -187,35 +185,26 @@ contract ResourceGenerator is OwnableUpgradeable {
     /**
      *  Allows a user to mint a tile of a particular resource type.
      */
-    function mintTile(uint16 resourceType) public payable returns (uint256) {
+    function mintTile(uint256 tileId) public payable {
         require(
-            mintData[u2Rss(resourceType)].tileMax != 0 &&
-                mintData[u2Rss(resourceType)].tilePrice != 0,
-            "ResourceGenerator: resource's mint data must be initialized."
-        );
-        require(
-            msg.value >= mintData[u2Rss(resourceType)].tilePrice,
+            msg.value >= mintPrice,
             "ResourceGenerator: value sent must be equal to or greater than the price."
         );
         require(
-            mintData[u2Rss(resourceType)].tilesMinted + 1 <
-                mintData[u2Rss(resourceType)].tileMax,
+            tileId < maxMint,
             "ResourceGenerator: must be under mint max."
         );
 
         // Mints tile
-        uint256 newId = tiles.userMintToken(msg.sender);
-        tileData[newId].buildingMax = 6;
-        tileData[newId].resourceType = uint8(resourceType);
-        tileData[newId].lastClaim = block.timestamp;
-        mintData[u2Rss(resourceType)].tilesMinted += 1;
+        tiles.userMintToken(msg.sender, tileId);
+        tileData[tileId].buildingMax = 6;
+        tileData[tileId].lastClaim = block.timestamp;
+        tilesMinted += 1;
 
         // Gives the user preliminary resources
         resourceTokens.mint(msg.sender, 0, 100 ether, "");
         resourceTokens.mint(msg.sender, 1, 750 ether, "");
         resourceTokens.mint(msg.sender, 2, 750 ether, "");
-
-        return newId;
     }
 
     /**
@@ -249,14 +238,8 @@ contract ResourceGenerator is OwnableUpgradeable {
 
         // require correct building type
         require(
-            buildingType != 0,
+            buildingType != 0 && BuildingTypes(buildingId) <= BuildingTypes.IronMine,
             "ResourceGenerator: buildingType cannot be the empty type."
-        );
-        require(
-            u2Rss(tile.resourceType) == Resources.Gold ||
-                u2Rss(tile.resourceType) ==
-                buildingToResource(BuildingTypes(buildingType)),
-            "ResourceGenerator: must be a valid building."
         );
 
         // get the price
@@ -269,29 +252,19 @@ contract ResourceGenerator is OwnableUpgradeable {
             buildings[buildingId]
         );
 
-        console.log("Got upgrade building cost.");
-
         // burn tokens
         for (uint256 i = 0; i < 5; i++) {
             if (cost[i] > 0) {
                 resourceTokens.burn(from, uint256(rss[i]), cost[i]);
             }
         }
-        console.log("Tokens burned");
 
         // claim resources
         _claimTileRewards(tileId, from);
-        console.log("Tile rewards claimed");
 
         // get the upgrade
         Building storage b = buildingData[tileId][buildingId];
         b.buildingLevel += 1;
-        console.log(
-            "Building level of tile %s at id %s is %s",
-            tileId,
-            buildingId,
-            b.buildingLevel
-        );
 
         emit BuildingUpgraded(
             tileId,
@@ -426,15 +399,16 @@ contract ResourceGenerator is OwnableUpgradeable {
     }
 
     /**
-     *  Allows the owner to change the mint data.
+     *  Allows the owner to change the mint price.
      */
-    function setMintData(
-        uint16 resourceType,
-        uint16 tileMax,
-        uint224 tilePrice
-    ) external onlyOwner {
-        ResourceToPrice storage rp = mintData[u2Rss(resourceType)];
-        rp.tileMax = tileMax;
-        rp.tilePrice = tilePrice;
+    function setMintPrice(uint256 newMintPrice) external onlyOwner {
+        mintPrice = newMintPrice;
+    }
+
+    /**
+     *  Allows the owner to set a new max mint.
+     */
+    function setMaxMint(uint128 newMaxMint) external onlyOwner {
+        maxMint = newMaxMint;
     }
 }
