@@ -2,17 +2,12 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-    "txHash": "0x9115a8c55e24ffa6c78b9e802d2a1d6e5a393776e3e01f66dd12f5b1c1764f06"
+    "txHash": "0xc3ad3306e341d3d61e483818a06fa4aad3b3a943046ff59662d2ff7e5b1f49d3"
   },
   "proxies": [
     {
       "address": "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49",
       "txHash": "0x6e1ef156b4ff281924d9190bfaee193cd20559f15f7e16c926c547053035c0e8",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
-      "txHash": "0xc0911b9fdd6e04866c1278b2051e852038738810a7fcbe5f228846758305fcd4",
       "kind": "transparent"
     },
     {
@@ -24,12 +19,37 @@
       "address": "0x4826533B4897376654Bb4d4AD88B7faFD0C98528",
       "txHash": "0xbf6fc218a639eeadb8e006015305e814f4bccc7203bc8b0ade9f1933514c2434",
       "kind": "transparent"
+    },
+    {
+      "address": "0x67d269191c92Caf3cD7723F116c85e6E9bf55933",
+      "txHash": "0x2e2d619630db5e7a6da8a61df2740d34746ad5f196d58c167b3844f0e2c78746",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+      "txHash": "0x076a5368d45f1c45783596875e82e33a56e7d4c9707b680e18b6dd1d29f2cabb",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      "txHash": "0x271fb490d43de15f4c6ee81c874d50353e8bfc7408cd7942d428e0b72e37754d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
+      "txHash": "0x02c83f40bbf722b5fe19e30c90913fc80ff7374e519e7176cab444d499eab0be",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+      "txHash": "0xe99eec25d0cb84bf9d2571f835e27c90ec555e531b6cf33e6ec6ceb0b2819fa3",
+      "kind": "transparent"
     }
   ],
   "impls": {
-    "62fed7ecf2e1920528da5fc000f20372156c91a43379e9089eb849e80051ad53": {
+    "e748d8d6bcf78d51971109e373fdf92cc7f4917e9d8e84d2cafef2a5d87b2689": {
       "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      "txHash": "0x94a13b6a829a87fe94fc56b030eb069039f3dff38ddcaa69de378cd8d934d029",
+      "txHash": "0x419a71741b4ebe01c5dde44ebabd4d7f296a8870cf61a8f0bffe489c77d31c33",
       "layout": {
         "storage": [
           {
@@ -76,7 +96,7 @@
             "label": "tiles",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(NEARFiefdomNFT)5108",
+            "type": "t_contract(NEARFiefdomNFT)5099",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:10"
           },
@@ -84,40 +104,56 @@
             "label": "resourceTokens",
             "offset": 0,
             "slot": "102",
-            "type": "t_contract(ResourcesERC1155)6415",
+            "type": "t_contract(ResourcesERC1155)6294",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:11"
           },
           {
-            "label": "tileData",
+            "label": "mintPrice",
             "offset": 0,
             "slot": "103",
-            "type": "t_mapping(t_uint256,t_struct(Tile)5181_storage)",
+            "type": "t_uint256",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:12"
           },
           {
-            "label": "buildingData",
+            "label": "maxMint",
             "offset": 0,
             "slot": "104",
-            "type": "t_mapping(t_uint256,t_array(t_struct(Building)5172_storage)10_storage)",
+            "type": "t_uint128",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:13"
           },
           {
-            "label": "mintData",
-            "offset": 0,
-            "slot": "105",
-            "type": "t_mapping(t_enum(Resources)5191,t_struct(ResourceToPrice)5165_storage)",
+            "label": "tilesMinted",
+            "offset": 16,
+            "slot": "104",
+            "type": "t_uint128",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:14"
+          },
+          {
+            "label": "tileData",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_struct(Tile)5163_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:15"
+          },
+          {
+            "label": "buildingData",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Building)5156_storage)10_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:16"
           }
         ],
         "types": {
           "t_address": {
             "label": "address"
           },
-          "t_array(t_struct(Building)5172_storage)10_storage": {
+          "t_array(t_struct(Building)5156_storage)10_storage": {
             "label": "struct ResourceGenerator.Building[10]"
           },
           "t_array(t_uint256)49_storage": {
@@ -132,39 +168,22 @@
           "t_bytes27": {
             "label": "bytes27"
           },
-          "t_bytes29": {
-            "label": "bytes29"
+          "t_bytes30": {
+            "label": "bytes30"
           },
-          "t_contract(NEARFiefdomNFT)5108": {
+          "t_contract(NEARFiefdomNFT)5099": {
             "label": "contract NEARFiefdomNFT"
           },
-          "t_contract(ResourcesERC1155)6415": {
+          "t_contract(ResourcesERC1155)6294": {
             "label": "contract ResourcesERC1155"
           },
-          "t_enum(Resources)5191": {
-            "label": "enum ResourceGenerator.Resources",
-            "members": [
-              "Gold",
-              "Lumber",
-              "Food",
-              "Stone",
-              "Iron",
-              "Coal",
-              "OliveOil",
-              "Pearl",
-              "Glass"
-            ]
-          },
-          "t_mapping(t_enum(Resources)5191,t_struct(ResourceToPrice)5165_storage)": {
-            "label": "mapping(enum ResourceGenerator.Resources => struct ResourceGenerator.ResourceToPrice)"
-          },
-          "t_mapping(t_uint256,t_array(t_struct(Building)5172_storage)10_storage)": {
+          "t_mapping(t_uint256,t_array(t_struct(Building)5156_storage)10_storage)": {
             "label": "mapping(uint256 => struct ResourceGenerator.Building[10])"
           },
-          "t_mapping(t_uint256,t_struct(Tile)5181_storage)": {
+          "t_mapping(t_uint256,t_struct(Tile)5163_storage)": {
             "label": "mapping(uint256 => struct ResourceGenerator.Tile)"
           },
-          "t_struct(Building)5172_storage": {
+          "t_struct(Building)5156_storage": {
             "label": "struct ResourceGenerator.Building",
             "members": [
               {
@@ -181,24 +200,7 @@
               }
             ]
           },
-          "t_struct(ResourceToPrice)5165_storage": {
-            "label": "struct ResourceGenerator.ResourceToPrice",
-            "members": [
-              {
-                "label": "tileMax",
-                "type": "t_uint16"
-              },
-              {
-                "label": "tilesMinted",
-                "type": "t_uint16"
-              },
-              {
-                "label": "tilePrice",
-                "type": "t_uint224"
-              }
-            ]
-          },
-          "t_struct(Tile)5181_storage": {
+          "t_struct(Tile)5163_storage": {
             "label": "struct ResourceGenerator.Tile",
             "members": [
               {
@@ -206,12 +208,8 @@
                 "type": "t_uint16"
               },
               {
-                "label": "resourceType",
-                "type": "t_uint8"
-              },
-              {
                 "label": "data",
-                "type": "t_bytes29"
+                "type": "t_bytes30"
               },
               {
                 "label": "lastClaim",
@@ -219,20 +217,17 @@
               }
             ]
           },
+          "t_uint128": {
+            "label": "uint128"
+          },
           "t_uint16": {
             "label": "uint16"
-          },
-          "t_uint224": {
-            "label": "uint224"
           },
           "t_uint24": {
             "label": "uint24"
           },
           "t_uint256": {
             "label": "uint256"
-          },
-          "t_uint8": {
-            "label": "uint8"
           }
         }
       }

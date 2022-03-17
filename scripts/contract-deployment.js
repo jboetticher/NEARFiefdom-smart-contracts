@@ -24,7 +24,12 @@ async function main() {
   // 4. Deploy and initialize upgradable contract ResourceGenerator.
   const ResourceGenerator = await ethers.getContractFactory("ResourceGenerator");
   console.log("Beginning ResourceGenerator deployment: " + nft.address + ", " + rss.address);
-  const rssgen = await upgrades.deployProxy(ResourceGenerator, [nft.address, rss.address]);
+  const rssgen = await upgrades.deployProxy(ResourceGenerator, [
+    nft.address, 
+    rss.address,
+    "150000000000000000",
+    150
+  ]);
   console.log("ResourceGenerator deployed to:", rssgen.address);
 
 
@@ -34,17 +39,7 @@ async function main() {
   await rss.grantMintRole(rssgenaddr);
   console.log("ResourceGenerator granted roles.");
 
-  // 6. Initialize the mint data for each of the resources in the ResourceGenerator.
-  await rssgen.setMintData(1, 40, "100000000000000000");
-  console.log("ResourceGenerator mint data set for Lumber.");
-  await rssgen.setMintData(2, 40, "100000000000000000");
-  console.log("ResourceGenerator mint data set for Stone.");
-  await rssgen.setMintData(3, 30, "150000000000000000");
-  console.log("ResourceGenerator mint data set for Brick.");
-  await rssgen.setMintData(4, 20, "200000000000000000");
-  console.log("ResourceGenerator mint data set for Iron.");
-
-  // 7. Manually add pools to AuroraSwap
+  // 6. Manually add pools to AuroraSwap
   // https://swap.auroraswap.net/#/swap
   // Gold <-> Wood
   // Gold <-> Stone

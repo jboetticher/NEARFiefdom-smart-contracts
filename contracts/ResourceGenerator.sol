@@ -9,7 +9,7 @@ import "hardhat/console.sol";
 contract ResourceGenerator is OwnableUpgradeable {
     NEARFiefdomNFT tiles;
     ResourcesERC1155 resourceTokens;
-    uint public mintPrice;
+    uint256 public mintPrice;
     uint128 public maxMint;
     uint128 public tilesMinted;
     mapping(uint256 => Tile) public tileData;
@@ -63,10 +63,12 @@ contract ResourceGenerator is OwnableUpgradeable {
     }
 
     // Need to turn this into the init function instead of having a constructor
-    function initialize(NEARFiefdomNFT _tiles, ResourcesERC1155 _resourceTokens, uint _mintPrice, uint128 _maxMint)
-        public
-        initializer
-    {
+    function initialize(
+        NEARFiefdomNFT _tiles,
+        ResourcesERC1155 _resourceTokens,
+        uint256 _mintPrice,
+        uint128 _maxMint
+    ) public initializer {
         __Ownable_init_unchained();
         tiles = _tiles;
         resourceTokens = _resourceTokens;
@@ -85,7 +87,6 @@ contract ResourceGenerator is OwnableUpgradeable {
     modifier tileIsInitialized(uint256 tileId) {
         require(
             tileData[tileId].buildingMax != 0 &&
-                //tileData[tileId].resourceType != 0 &&
                 tileData[tileId].lastClaim != 0,
             "ResourceGenerator: tile is not initialized."
         );
@@ -190,10 +191,7 @@ contract ResourceGenerator is OwnableUpgradeable {
             msg.value >= mintPrice,
             "ResourceGenerator: value sent must be equal to or greater than the price."
         );
-        require(
-            tileId < maxMint,
-            "ResourceGenerator: must be under mint max."
-        );
+        require(tileId < maxMint, "ResourceGenerator: must be under mint max.");
 
         // Mints tile
         tiles.userMintToken(msg.sender, tileId);
@@ -238,7 +236,8 @@ contract ResourceGenerator is OwnableUpgradeable {
 
         // require correct building type
         require(
-            buildingType != 0 && BuildingTypes(buildingId) <= BuildingTypes.IronMine,
+            buildingType != 0 &&
+                BuildingTypes(buildingId) <= BuildingTypes.IronMine,
             "ResourceGenerator: buildingType cannot be the empty type."
         );
 
