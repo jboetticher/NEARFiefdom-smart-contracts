@@ -195,7 +195,7 @@ contract ResourceGenerator is OwnableUpgradeable {
 
         // Mints tile
         tiles.userMintToken(msg.sender, tileId);
-        tileData[tileId].buildingMax = 6;
+        tileData[tileId].buildingMax = 7;
         tileData[tileId].lastClaim = block.timestamp;
         tilesMinted += 1;
 
