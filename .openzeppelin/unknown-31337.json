@@ -2,7 +2,7 @@
   "manifestVersion": "3.2",
   "admin": {
     "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-    "txHash": "0xc3ad3306e341d3d61e483818a06fa4aad3b3a943046ff59662d2ff7e5b1f49d3"
+    "txHash": "0xef89618fa31b0ce0f0f4f42579fc149d9c12535f80b9b5eeb8b80f2711269213"
   },
   "proxies": [
     {
@@ -37,19 +37,19 @@
     },
     {
       "address": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318",
-      "txHash": "0x02c83f40bbf722b5fe19e30c90913fc80ff7374e519e7176cab444d499eab0be",
+      "txHash": "0xcb1f302ae2e92778b679c971d5283d40b1e56bb477159d7920942a572e2f73fb",
       "kind": "transparent"
     },
     {
       "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
-      "txHash": "0xe99eec25d0cb84bf9d2571f835e27c90ec555e531b6cf33e6ec6ceb0b2819fa3",
+      "txHash": "0xba734ca7073227f567e16678e692a5c0591648a3aa1083eb6af4c0b12971c3ab",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "d9673454ef8d5dbae318f26167000f11b787d2549ae42b761468b90eadcf773b": {
+    "052d294edd5d3bf41902216f93db3df43eb954aed560c375f5dbfdb2ad197c67": {
       "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      "txHash": "0x699449d133e0b5281d6e4df6e22d6a49669c72bcd53103a4bcd041401fc2d292",
+      "txHash": "0xe640f0e1625ec55300f33b2bc8806463f66c4d9d242ad7156303259e01353159",
       "layout": {
         "storage": [
           {
@@ -104,7 +104,7 @@
             "label": "resourceTokens",
             "offset": 0,
             "slot": "102",
-            "type": "t_contract(ResourcesERC1155)6294",
+            "type": "t_contract(ResourcesERC1155)6312",
             "contract": "ResourceGenerator",
             "src": "contracts/ResourceGenerator.sol:11"
           },
@@ -174,7 +174,7 @@
           "t_contract(NEARFiefdomNFT)5099": {
             "label": "contract NEARFiefdomNFT"
           },
-          "t_contract(ResourcesERC1155)6294": {
+          "t_contract(ResourcesERC1155)6312": {
             "label": "contract ResourcesERC1155"
           },
           "t_mapping(t_uint256,t_array(t_struct(Building)5156_storage)10_storage)": {

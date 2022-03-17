@@ -240,6 +240,12 @@ contract ResourceGenerator is OwnableUpgradeable {
                 BuildingTypes(buildingId) <= BuildingTypes.IronMine,
             "ResourceGenerator: buildingType cannot be the empty type."
         );
+        if (buildings[buildingId].buildingType != 0) {
+            require(
+                buildings[buildingId].buildingType == buildingType,
+                "ResourceGenerator: cannot overwrite with a different building."
+            );
+        }
 
         // get the price
         if (buildingData[tileId][buildingId].buildingType == 0) {
