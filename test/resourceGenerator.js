@@ -70,7 +70,7 @@ describe("ResourceGenerator", function () {
     console.log(buildingData);
 
     assert(buildingData.buildingLevel == 1, "Correct building level was not established.");
-    assert(buildingData.buildingType == 2, "Correct building type was notestablished.");
+    assert(buildingData.buildingType == 2, "Correct building type was not established.");
   });
 
 });

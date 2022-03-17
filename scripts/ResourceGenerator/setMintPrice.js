@@ -1,14 +1,10 @@
-const { ethers, upgrades } = require("hardhat");
+const { ethers } = require("hardhat");
 let addresses = require("./addresses.json");
-
-const TILE_ID =         0;
-const BUILDING_ID =     3;
-const BUILDING_TYPE =   1;
 
 async function main() {
   const ResourceGenerator = await ethers.getContractFactory("ResourceGenerator");
   const rssgen = await ResourceGenerator.attach(addresses.RSSGEN);
-  let res = await rssgen.upgradeBuilding(TILE_ID, BUILDING_ID, BUILDING_TYPE);
+  let res = await rssgen.setMintPrice(ethers.utils.parseEther("0.005")); // parseEther("0.15")
   console.log(res);
 }
 

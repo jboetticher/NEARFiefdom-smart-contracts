@@ -42,7 +42,9 @@ module.exports = {
       url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
       accounts: [`0x${AURORA_PRIVATE_KEY}`],
       chainId: 4,
-      timeout: 120000
+      timeout: 120000,
+      gas: 2100000,
+      gasPrice: 2401000000
     },
   }
 };

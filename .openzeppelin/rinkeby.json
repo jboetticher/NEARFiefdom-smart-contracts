@@ -9,6 +9,11 @@
       "address": "0xa53Cb87BbDEE3e19Cd186375AE0b53EbEdcc9E89",
       "txHash": "0x0981b49247363ba37dc46d352566f8533393d64d7bda4e9fafa51cf5b51ee595",
       "kind": "transparent"
+    },
+    {
+      "address": "0xDE673530679D7b34D90D3975F4dDF9809F7e52A4",
+      "txHash": "0xd1b3e93b1d3a08a7f7fe269d98e4aa17c763febeea0f9be1f45200449675e896",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -211,6 +216,191 @@
           },
           "t_uint8": {
             "label": "uint8"
+          }
+        }
+      }
+    },
+    "d9673454ef8d5dbae318f26167000f11b787d2549ae42b761468b90eadcf773b": {
+      "address": "0xc8E666A95d8FB2F4Ead11F8f4f7D25E2aa8c14b4",
+      "txHash": "0x5cd2cf87050b8a7ea6ac7df25515b71b86d71414585bae4ca876401fcc00f6df",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "tiles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_contract(NEARFiefdomNFT)5099",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:10"
+          },
+          {
+            "label": "resourceTokens",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_contract(ResourcesERC1155)6294",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:11"
+          },
+          {
+            "label": "mintPrice",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_uint256",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:12"
+          },
+          {
+            "label": "maxMint",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_uint128",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:13"
+          },
+          {
+            "label": "tilesMinted",
+            "offset": 16,
+            "slot": "104",
+            "type": "t_uint128",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:14"
+          },
+          {
+            "label": "tileData",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_struct(Tile)5163_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:15"
+          },
+          {
+            "label": "buildingData",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_uint256,t_array(t_struct(Building)5156_storage)10_storage)",
+            "contract": "ResourceGenerator",
+            "src": "contracts/ResourceGenerator.sol:16"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_struct(Building)5156_storage)10_storage": {
+            "label": "struct ResourceGenerator.Building[10]"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_bytes27": {
+            "label": "bytes27"
+          },
+          "t_bytes30": {
+            "label": "bytes30"
+          },
+          "t_contract(NEARFiefdomNFT)5099": {
+            "label": "contract NEARFiefdomNFT"
+          },
+          "t_contract(ResourcesERC1155)6294": {
+            "label": "contract ResourcesERC1155"
+          },
+          "t_mapping(t_uint256,t_array(t_struct(Building)5156_storage)10_storage)": {
+            "label": "mapping(uint256 => struct ResourceGenerator.Building[10])"
+          },
+          "t_mapping(t_uint256,t_struct(Tile)5163_storage)": {
+            "label": "mapping(uint256 => struct ResourceGenerator.Tile)"
+          },
+          "t_struct(Building)5156_storage": {
+            "label": "struct ResourceGenerator.Building",
+            "members": [
+              {
+                "label": "buildingType",
+                "type": "t_uint16"
+              },
+              {
+                "label": "buildingLevel",
+                "type": "t_uint24"
+              },
+              {
+                "label": "data",
+                "type": "t_bytes27"
+              }
+            ]
+          },
+          "t_struct(Tile)5163_storage": {
+            "label": "struct ResourceGenerator.Tile",
+            "members": [
+              {
+                "label": "buildingMax",
+                "type": "t_uint16"
+              },
+              {
+                "label": "data",
+                "type": "t_bytes30"
+              },
+              {
+                "label": "lastClaim",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint128": {
+            "label": "uint128"
+          },
+          "t_uint16": {
+            "label": "uint16"
+          },
+          "t_uint24": {
+            "label": "uint24"
+          },
+          "t_uint256": {
+            "label": "uint256"
           }
         }
       }
