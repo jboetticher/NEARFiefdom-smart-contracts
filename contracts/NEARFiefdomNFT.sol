@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract NEARFiefdomNFT is ERC721Pausable, Ownable {
 
     address minter;
-    uint32 currentId;
 
     /**
      *  _mintPrice  The cost to mint a transaction.
@@ -20,11 +19,9 @@ contract NEARFiefdomNFT is ERC721Pausable, Ownable {
     /**
      *  Allows the minter to mint a token for a specific fee.
      */
-    function userMintToken(address to) external whenNotPaused returns(uint256) {
+    function userMintToken(address to, uint id) external whenNotPaused {
         require(msg.sender == minter, "NEARFiefdomNFT: only minter can mint tokens.");
-        _safeMint(to, uint256(currentId));
-        currentId++;
-        return currentId - 1;
+        _safeMint(to, uint256(id));
     }
 
 
